@@ -1,23 +1,23 @@
+
 variable "aws_region" {
-  description = "AWS region where Terraform will operate"
+  description = "AWS region"
   type        = string
   default     = "ap-south-1"
 }
 
-variable "iam_role_name" {
-  description = "Name of the IAM role"
+variable "vpc_id" {
+  description = "Existing VPC ID"
   type        = string
-  default     = "terraform-practice-lambda-role"
 }
 
-variable "iam_policy_name" {
-  description = "Name of the IAM policy"
+variable "instance_type" {
+  description = "EC2 instance type"
   type        = string
-  default     = "terraform-practice-lambda-logs-policy"
+  default     = "t3.micro"
 }
 
 variable "environment" {
-  description = "Environment tag"
+  description = "Environment name"
   type        = string
   default     = "Dev"
 }
