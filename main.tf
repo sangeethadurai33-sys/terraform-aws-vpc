@@ -1,65 +1,64 @@
-# IAM Role
-resource "aws_iam_role" "lambda_role" {
-  name        = var.iam_role_name
-  description = "Practice IAM role for AWS Lambda"
+# Look up the existing VPC
+data "aws_vpc" "existing" {
+  id = var.vpc_id
+}
 
-  # Trust policy: allows the Lambda service to assume this role
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+# Find subnets in the existing VPC
+data "aws_subnets" "existing" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.existing.id]
+  }
+}
 
-    Statement = [
-      {
-        Effect = "Allow"
+# Find the latest Amazon Linux 2023 AMI
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
 
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        }
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023*-x86_64"]
+  }
 
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
+# Create a Security Group
+resource "aws_security_group" "ec2_sg" {
+  name        = "terraform-practice-ec2-sg"
+  description = "Security group for Terraform EC2 practice"
+  vpc_id      = data.aws_vpc.existing.id
+
+  # No inbound access is allowed
+  # Allow outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = {
-    Name        = var.iam_role_name
+    Name        = "terraform-practice-ec2-sg"
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
 }
 
-# IAM Policy
-resource "aws_iam_policy" "lambda_logs_policy" {
-  name        = var.iam_policy_name
-  description = "Allow Lambda to write logs to CloudWatch"
-
-  # Permissions policy
-  policy = jsonencode({
-    Version = "2012-10-17"
-
-    Statement = [
-      {
-        Effect = "Allow"
-
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ]
-
-        Resource = "arn:aws:logs:${var.aws_region}:*:log-group:/aws/lambda/*:*"
-      }
-    ]
-  })
+# Create an EC2 instance
+resource "aws_instance" "practice" {
+  ami                    = data.aws_ami.amazon_linux.id
+  instance_type          = var.instance_type
+  subnet_id              = data.aws_subnets.existing.ids[0]
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
 
   tags = {
-    Name        = var.iam_policy_name
+    Name        = "terraform-practice-ec2"
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
-}
-
-# Attach IAM policy to IAM role
-resource "aws_iam_role_policy_attachment" "lambda_logs_attachment" {
-  role       = aws_iam_role.lambda_role.name
-  policy_arn = aws_iam_policy.lambda_logs_policy.arn
 }
