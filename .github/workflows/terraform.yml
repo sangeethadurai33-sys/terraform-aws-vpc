@@ -25,8 +25,13 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Import Existing S3 Bucket
+        run: |
+          if terraform state list | grep -qx 'aws_s3_bucket.my_bucket'; then
+            echo "S3 bucket is already tracked in Terraform state."
+          else
+            terraform import aws_s3_bucket.my_bucket terraform-github-s3-testing-01-sep-09
+          fi
+
       - name: Terraform Plan
         run: terraform plan
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
