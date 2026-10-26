@@ -1,11 +1,11 @@
 output "vpc_id" {
   description = "ID of the created VPC"
-  value       = aws_vpc.my_vpc.id
+  value       = data.aws_vpc.existing.id
 }
 
 output "vpc_cidr_block" {
   description = "CIDR block of the VPC"
-  value       = aws_vpc.my_vpc.cidr_block
+  value       = data.aws_vpc.existing.cidr_block
 }
 
 output "s3_bucket_id" {
