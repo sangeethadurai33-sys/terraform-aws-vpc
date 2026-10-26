@@ -1,20 +1,19 @@
-output "vpc_id" {
-  description = "ID of the created VPC"
-  value       = data.aws_vpc.existing.id
+output "iam_role_name" {
+  description = "Name of the IAM role"
+  value       = aws_iam_role.lambda_role.name
 }
 
-output "vpc_cidr_block" {
-  description = "CIDR block of the VPC"
-  value       = data.aws_vpc.existing.cidr_block
+output "iam_role_arn" {
+  description = "ARN of the IAM role"
+  value       = aws_iam_role.lambda_role.arn
 }
 
-output "s3_bucket_id" {
-  description = "ID of the created S3 bucket"
-  value       = aws_s3_bucket.my_bucket.id
+output "iam_policy_name" {
+  description = "Name of the IAM policy"
+  value       = aws_iam_policy.lambda_logs_policy.name
 }
 
-output "s3_bucket_arn" {
-  description = "ARN of the S3 bucket"
-  value       = aws_s3_bucket.my_bucket.arn
+output "iam_policy_arn" {
+  description = "ARN of the IAM policy"
+  value       = aws_iam_policy.lambda_logs_policy.arn
 }
-
