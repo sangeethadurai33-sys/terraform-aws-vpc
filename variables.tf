@@ -1,24 +1,23 @@
 variable "aws_region" {
-  description = "AWS region where resources will be created"
+  description = "AWS region where Terraform will operate"
   type        = string
+  default     = "ap-south-1"
 }
 
-variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
+variable "iam_role_name" {
+  description = "Name of the IAM role"
   type        = string
+  default     = "terraform-practice-lambda-role"
 }
 
-variable "vpc_name" {
-  description = "Name of the VPC"
+variable "iam_policy_name" {
+  description = "Name of the IAM policy"
   type        = string
-}
-variable "s3_bucket_name" {
-  description = "Name of the S3 bucket"
-  type        = string
+  default     = "terraform-practice-lambda-logs-policy"
 }
 
-variable "s3_acl" {
-  description = "ACL for the S3 bucket"
+variable "environment" {
+  description = "Environment tag"
   type        = string
-  default     = "private"
+  default     = "Dev"
 }
